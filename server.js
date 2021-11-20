@@ -25,7 +25,7 @@ const responses = {
     6: "Question 5",
     7: "Thank you! We would like to know about your preferences now. \nText YES to agree or NO to skip this step.",
     8: "Do you have a religious affiliation? \nAnswer YES or NO",
-    9: "Do you prefer a specific area of town? \nAnswer YES or NO",
+    9: "Do you prefer a specific area of town? \nAnswer YES or NO", //get rid of this later
     10: "What time do you like to go to bed? \nAnswer with a number",
     11: "Thank you for your preferences. Here are a list of shelters that you are eligible for, "
     + "along with their current capacities. \n\n LIST OF SHELTERS 1-5 HERE \n\nWhich shelter would you like to match to? " + 
@@ -44,6 +44,16 @@ app.post('/sms', (req, res) => {
 
     phoneNum = req.body.From;
 
+    var userInput = req.body.Body.toUpperCase();
+    var inputBool = false;
+    //Verify input as either Y/N/P
+    if (smsCount >= 0 || smsCount <= 9 || smsCount == 13 || smsCount ==14){
+      if (userInput === 'Y' || userInput === 'N' || userInput ==='P' || userInput ==='YES' ||userInput ==='NO'){
+        inputBool = true;
+      }
+    }
+    
+
     //Check if user is new
         //If database contains phoneNum, skip the dictionary parts
 
@@ -55,7 +65,7 @@ app.post('/sms', (req, res) => {
         inSetup = false;
     }
 
-    else if(smsCount == 1 && req.body.Body.toUpperCase() === 'YES' && inSetup){
+    else if(smsCount == 1 && userInput === 'YES' && inSetup){
         smsCount = 2;
         message = responses[smsCount];
     }
@@ -99,8 +109,10 @@ app.post('/sms', (req, res) => {
     }
 
     twiml.message(message);
-
-    req.session.counter = smsCount + 1;
+    console.log(inputBool);
+    if (inputBool) {
+      req.session.counter = smsCount + 1;
+    }
   
     res.writeHead(200, { 'Content-Type': 'text/xml' });
     res.end(twiml.toString());
