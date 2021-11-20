@@ -194,22 +194,28 @@ var shelterChoice = -1;
 
     console.log(questionCount);
     if(questionCount == 4){
-        message = questions[questionCount];
-        shelterChoice = response;
-        questionCount ++;
+        message = questions[questionCount]; //Do you want directions?
+        shelterChoice = response; //Store response
+        questionCount ++; 
     }
-    else if(questionCount == 5){
-        message = questions[5];
-        questionCount ++;
-    }
-    else if(questionCount == 6){
+    if(questionCount == 6){ 
         if(response == 'Y'){
-            message = responses[2];
+            message = questions[5]; //Then ask for the location
+        }
+        else{
+            questionCount = 10;
+        }
+        questionCount ++;
+    }
+    if(questionCount == 8){
+        if(response == 'Y'){
+            message = responses[2] + "\n " + responses[3]; //Then give directions
         }
     }
-    if(questionCount > 5){
+    if(questionCount > 9){
         message = responses[3];
     }
+
 
     twiml.message(message);
     console.log(message);
