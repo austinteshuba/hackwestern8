@@ -35,11 +35,11 @@ var skippedPref = false;
 const dict1 = {
   // Y/N/P
   // Demographics
-  1: "LGBTQ+",
-  2: "Youth",
-  3: "Family",
-  4: "Indigenous",
-  5: "Female",
+  1: "Are you LGBTQ+? \nAnswer [Y] for Yes, [N] for No, and [P] to Pass.",
+  2: "Are you a minor below the age of 18? \nAnswer [Y]/[N]/[P].",
+  3: "Are you accompanied by dependends below the age of 18? \nAnswer Y]/[N]/[P].",
+  4: "Do you identify as indigenous? \nAnswer Y]/[N]/[P].",
+  5: "Do you identify as female? \nAnswer Y]/[N]/[P].",
 };
 
 const dict2 = {
@@ -60,9 +60,11 @@ const questions = {
 };
 
 const responses = {
-  1: "NO - 1",
-  2: "Directions give",
-  3: "We will keep you updated",
+  1: "You will not be set up with a profile on ShelterFirst!",
+  2: "Here are the directions to [location of shelter]: \n\nGoogle Maps Directions",
+  3: "We will keep you updated on the capacity of this shelter. Your spot has been removed from our "
+  + "count for the next thirty minutes, so other ShelterFirst users will not be matched to your "
+  + "specific spot, but there are no guarantees about availability.",
 };
 
 var message = "def";
