@@ -1,4 +1,4 @@
-const { time } = require('console');
+const directions = require('./../getDirections')
 const fb = require('firebase-admin/app');
 const fs = require('firebase-admin/firestore');
 const prompt = require('prompt');
@@ -73,9 +73,9 @@ function inputUser(){
 
 // Set shelter in firestore
 function setShelter(name, add, city, meal, neighb, openBeds, totalBeds, phone, postal, quiet, sleep, wake, tags, prereq){
-    db.collection('shelters').doc(name.toUpperCase().replace(" ", "_")).set({
+    db.collection('shelters').doc(name.replace(" ", "_")).set({
             name: name,
-            key: name.toUpperCase().replace(" ", "_"),
+            key: name.replace(" ", "_"),
             address: add,
             city: city,
             quietShelter: quiet,
@@ -133,8 +133,10 @@ async function queryShelters(intersection, meal, quiet, wake, sleep, prereq){
         var shelter = shelters[i];
         shelterAddressList.push(shelter['address'] + ", " + shelter['city'] + ", " + shelter['postalCode']);
     }
+   // console.log(shelterAddressList);
     // Get travel times
-    //var travelTimes = await getTravelTimes(intersection, shelterAddressList);
+    var travelTimes = await directions.getDistancesToShelters(intersection, shelterAddressList);
+    //console.log(travelTimes);
     const query = [];
     for (var i = 0; i < shelters.length; i++) {
         var shelter = shelters[i];
@@ -147,23 +149,30 @@ async function queryShelters(intersection, meal, quiet, wake, sleep, prereq){
         // Don't include if user query is general and shelter has multiple prereqs
         if (prereq == [] && shelter['prerequisites'].length > 0 && !inclusivelyFamilyFriendly) add = false;
         // Test constraints
-        const validConstraints = ["youth", "family_friendly", "lgbtq", "indigenous", "female"]
+        const validConstraints = ["youth", "family_friendly", "lgbtq", "indigenous", "female"];
         prereq.forEach((p)=>{
             const req = p.toLowerCase().trim().toLowerCase();
             if (validConstraints.includes(req) && !shelter['prerequisites'].includes(req)) add = false;
         });
         if (add) { 
             // Add score for preferences
-           /// travelScore = traveltimes[i] == 0 ? 50 : Math.max(1, 50 / travelTimes[i]);
             if (wake && shelter['wakeUpTime'])
-                score += Math.min(5, Math.round(300 / timeDifference(shelter['wakeUpTime'], wake)));
+                score += Math.max(0, 2 - timeDifference(shelter['wakeUpTime'], wake) / 60 );
             if (sleep && shelter['sleepTime'])
-                score += Math.min(5, Math.round(300 / timeDifference(shelter['sleepTime'], wake)));
+                score += Math.max(0, 2 - timeDifference(shelter['sleepTime'], sleep) / 60 );
             if (meal && shelter['mealProvided'])
                 score += MEAL_PROVIDED_WEIGHT;
             if (quiet && shelter['quietShelter'])
                 score += QUIET_WEIGHT;
-           // shelter['travelTime'] = travelTimes[i][travelTime];
+            // Add score for travel
+            travelScore = travelTimes[i]['travelTime'] == 0 ? 80 : Math.max(1, 80 / travelTimes[i]['travelTime']);
+            travelScore = Math.max(0, 50 - travelTimes[i]['travelTime']);
+            //console.log(travelTimes[i]['travelTime'] + " " + travelScore);
+            score += travelScore;
+            // Add data to JSON
+            shelter['directions'] = travelTimes[i]['directions'];
+            shelter['shelterLocation'] = travelTimes[i]['directions'];
+            shelter['travelTime'] = travelTimes[i]['travelTime'];
             shelter['score'] = score;
             query.push(shelter);
         }
@@ -189,4 +198,4 @@ async function userQuery(phone, intersection){
 }
 
 
-queryShelters("Oxford and Richmond St", false, null, 8, 23, ['female', "lgbt"]);
+queryShelters("Oxford and Richmond St", true, true, 8, 23, ['female']);

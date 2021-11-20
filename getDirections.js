@@ -8,7 +8,7 @@ const https = require('https');
  * @param shelterLocations {string[]} array of addresses for different shelters.
  * @return list of objects with the name of the shelter and the travel time measured in minutes.
  */
-function getDistancesToShelters(userLocation, shelterLocations) {
+module.exports.getDistancesToShelters = function getDistancesToShelters(userLocation, shelterLocations) {
   const directionsPromises = shelterLocations.map(shelterLocation => getDirections(userLocation, shelterLocation));
   return new Promise((resolve, reject) => {
     Promise.all(directionsPromises)
@@ -90,5 +90,5 @@ function travelTimeFromRoute(route) {
   return route.legs.reduce((sum, leg) => leg.duration.value + sum, 0);
 }
 
-getDistancesToShelters('453 St George, London ON', ['123 Richmond St, London ON', '513 First St, London ON'])
-  .then((distances) => console.log(distances));
+/*getDistancesToShelters('453 St George, London ON', ['123 Richmond St, London ON', '513 First St, London ON'])
+  .then((distances) => console.log(distances));*/
