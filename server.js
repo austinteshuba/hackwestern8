@@ -24,7 +24,7 @@ app.post('/sms', (req, res) => {
         inSetup = false;
     }
     else if(smsCount === 1 && req.body.Body == 'YES' && inSetup){
-        twiml.message("\n\nGreat. Would you like to be matched to the nearest shelter, or the best shelter that fits your preferences? Answer BEST or NEAREST");
+        twiml.message("\n\nGreat. Would you like to be matched to the nearest shelter, or the shelter that best fits your needs? Answer NEAREST or BEST");
     }
     else if(smsCount === 2 && inSetup){
         twiml.message("\n\nGot it. Now we need to learn a bit more about you \n\nQuestion 1. Answer YES or NO");
