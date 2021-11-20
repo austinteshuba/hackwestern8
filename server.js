@@ -84,7 +84,7 @@ app.post('/sms', (req, res) => {
         questionCount ++;
     }
     else if(questionCount == 2 && dict1Count == 1){
-        if(response == 'Y'){
+        if(response == 'Y'){ 
             demo = true;
             //Go through demo toggle
         }
