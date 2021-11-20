@@ -64,13 +64,13 @@ app.post('/sms', (req, res) => {
         inSetup = false;
     }
     //Skip preferences
-    else if(smsCount == 8 && req.body.BodylocaleCompare('NO') && inSetup){
+    else if(smsCount == 8 && req.body.Body.localeCompare('NO') && inSetup){
         skipSetup = true;
         smsCount = 12;
         message = responses[12];
     }
     //Say yes to answering preferences
-    else if(smsCount == 8 && req.body.BodylocaleCompare('YES') && inSetup){
+    else if(smsCount == 8 && req.body.Body.localeCompare('YES') && inSetup){
         message = responses[smsCount];
     }
     //Handle end of answering
@@ -80,13 +80,13 @@ app.post('/sms', (req, res) => {
         message = responses[11];
     }
     //Say yes to directions
-    else if(smsCount == 14 && req.body.BodylocaleCompare('YES') && inSetup){
+    else if(smsCount == 14 && req.body.Body.localeCompare('YES') && inSetup){
         message = responses[14];
         smsCount = 15;
         inSetup = false;
     }
     //Say no to directions
-    else if(smsCount == 14 && req.body.BodylocaleCompare('NO') && inSetup){
+    else if(smsCount == 14 && req.body.Body.localeCompare('NO') && inSetup){
         message = responses[15];
         smsCount = 15;
         inSetup = false;
