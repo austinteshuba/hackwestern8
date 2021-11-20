@@ -36,7 +36,7 @@ const responses = {
     13: "Alright, sounds great. Do you need directions? Answer YES or NO",
     14: "DIRECTIONS GO HERE." + "\n\n\nWe will keep you updated on the capacity of this shelter. Your spot has been removed from our count"
     + " for the next thirty minutes, so other ShelterFirst users will not be matched to your specific spot, but there are no guarantees about availability.",
-    13: "We will keep you updated on the capacity of this shelter. Your spot has been removed from our count"
+    15: "We will keep you updated on the capacity of this shelter. Your spot has been removed from our count"
     + " for the next thirty minutes, so other ShelterFirst users will not be matched to your specific spot, but there are no guarantees about availability.",
 }
 
@@ -64,13 +64,13 @@ app.post('/sms', (req, res) => {
         inSetup = false;
     }
     //Skip preferences
-    else if(smsCount == 8 && req.body.Body == 'NO' && inSetup){
+    else if(smsCount == 8 && req.body.BodylocaleCompare('NO') && inSetup){
         skipSetup = true;
         smsCount = 12;
         message = responses[12];
     }
     //Say yes to answering preferences
-    else if(smsCount == 8 && req.body.Body == 'YES' && inSetup){
+    else if(smsCount == 8 && req.body.BodylocaleCompare('YES') && inSetup){
         message = responses[smsCount];
     }
     //Handle end of answering
@@ -80,13 +80,13 @@ app.post('/sms', (req, res) => {
         message = responses[11];
     }
     //Say yes to directions
-    else if(smsCount == 14 && req.body.BODY == 'YES' && inSetup){
+    else if(smsCount == 14 && req.body.BodylocaleCompare('YES') && inSetup){
         message = responses[14];
         smsCount = 15;
         inSetup = false;
     }
     //Say no to directions
-    else if(smsCount == 14 && req.body.Body == 'NO' && inSetup){
+    else if(smsCount == 14 && req.body.BodylocaleCompare('NO') && inSetup){
         message = responses[15];
         smsCount = 15;
         inSetup = false;
