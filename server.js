@@ -9,35 +9,59 @@ const app = express();
 app.use(session({secret: 'shelter'}));
 app.use(bodyParser.urlencoded({ extended: false }));
 
+//User Profile
 var phoneNum = "";
+var city = "";
+var quiet = false;
+var meal = false;
+var neighbourhood = "";        
+var sleep = -1;
+var wake = -1;
+var prereq = [];
+var shelterChoice = -1;
 
-var inSetup = true;
-var skipSetup = false;
 //Needs logic for first time user or not
 
+var demo = false;
+var pref = false;
+var inSetup = false;
+
+var questionCount = 1;
+var dict1Count = 1;
+var dict2Count = 1;
+var responseCount = 1;
+
+const dict1 = {
+    // Y/N/P
+    // Demographics
+    1: "LGBTQ+",
+    2: "Youth",
+    3: "Family",
+    4: "Addiction",
+    5: "Female",
+}
+
+const dict2 = {
+    1: "City",
+    2: "Quiet",
+    3: "Meal",
+    4: "Neighborhood",
+    5: "Sleep",
+    6: "Wake",
+}
+
+const questions = {
+    1: "Welcome & Set up",
+    2: "Fill preferences",
+    3: "Choose shelter",
+    4: "Directions",
+    5: "Location"
+}
+
 const responses = {
-    0: "\nWelcome to ShelterFirst! \nWould you like to be matched to an emergency homeless shelter? \nAnswer YES or NO.",
-    1: "You will not be matched to an emergency homeless shelter.",
-    2: "Now we need to learn a bit more about you. \n\nQuestion 1... \n\nAnswer Y for Yes \nAnswer N for No \n Answer P for Pass",
-    3: "Question 2. \nAnswer Y/N/P",
-    4: "Question 3. \nAnswer Y/N/P",
-    5: "Question 4. \nAnswer Y/N/P",
-    6: "Question 5. \nAnswer Y/N/P",
-    7: "Thank you! We would like to know about your preferences now. \nText YES to agree or NO to skip this step.",
-    8: "Do you have a religious affiliation? \nAnswer YES or NO",
-    9: "Do you prefer a specific area of town? \nAnswer YES or NO", //get rid of this later
-    10: "What time do you like to go to bed? \nAnswer with a number",
-    11: "Thank you for your preferences. Here are a list of shelters that you are eligible for, "
-    + "along with their current capacities. \n\n LIST OF SHELTERS 1-5 HERE \n\nWhich shelter would you like to match to? " + 
-    "Answer with a number between 1-5",
-    12: "You've skipped the setup process. Here are a list of shelters that you are eligible for, "
-    + "along with their current capacities. \n\n LIST OF SHELTERS 1-5 HERE \n\nWhich shelter would you like to match to? " + 
-    "Answer with a number between 1-5",
-    13: "Alright, sounds great. Do you need directions? Answer YES or NO",
-    14: "DIRECTIONS GO HERE." + "\n\n\nWe will keep you updated on the capacity of this shelter. Your spot has been removed from our count"
-    + " for the next thirty minutes, so other ShelterFirst users will not be matched to your specific spot, but there are no guarantees about availability.",
-    15: "We will keep you updated on the capacity of this shelter. Your spot has been removed from our count"
-    + " for the next thirty minutes, so other ShelterFirst users will not be matched to your specific spot, but there are no guarantees about availability.",
+    1: "NO - 1",
+    2: "Directions",
+    3: "We will keep you updated"
 }
 
 app.post('/sms', (req, res) => {
@@ -46,74 +70,66 @@ app.post('/sms', (req, res) => {
 
     //Check if user is new
         //If database contains phoneNum, skip the dictionary parts
+    // req.body.Body.toUpperCase()
 
     var smsCount = req.session.counter || 0;
     const twiml = new MessagingResponse();
     var message = "";
+    var response = req.body.Body.toUpperCase();
 
-    var userInput = req.body.Body.toUpperCase();
-    var inputBool = false;
-    //Verify input as either Y/N/P
-    console.log(userInput);
-    if (smsCount >= 0 || smsCount <= 9 || smsCount == 13 || smsCount ==14){
-        console.log("INSIDE");
-      if (userInput == 'Y' || userInput == 'N' || userInput =='P' || userInput == 'YES' ||userInput == 'NO'){
-        inputBool = true;
-      }
+    if(questionCount == 1){
+        message = questions[1];
+        questionCount ++;
     }
-
-    if(smsCount >= 15){
-        inSetup = false;
-    }
-
-    else if(smsCount == 1 && userInput === 'YES' && inSetup){
-        smsCount = 2;
-        message = responses[smsCount];
-    }
-    else if(smsCount == 1 && inSetup){
-        message = responses[1];
-        inSetup = false;
-    }
-    //Skip preferences
-    else if(smsCount == 8 && req.body.Body.toUpperCase() === 'NO' && inSetup){
-        skipSetup = true;
-        smsCount = 12;
-        message = responses[12];
-    }
-    //Say yes to answering preferences
-    else if(smsCount == 8 && req.body.Body.toUpperCase() === 'YES' && inSetup){
-        message = responses[smsCount];
-    }
-    //Handle end of answering
-    else if(!skipSetup && smsCount == 11){
-        skipSetup = true;
-        smsCount = 12;
-        message = responses[11];
-    }
-    //Say yes to directions
-    else if(smsCount == 14 && req.body.Body.toUpperCase() === 'YES' && inSetup){
-        message = responses[14];
-        smsCount = 15;
-        inSetup = false;
-    }
-    //Say no to directions
-    else if(smsCount == 14 && req.body.Body.localeCompare('NO') && inSetup){
-        message = responses[15];
-        smsCount = 15;
-        inSetup = false;
-    }
-    else if(inSetup){
-        message = responses[smsCount];
-    }
-    if(!inSetup){
-        message = "OK";
+    if(questionCount == 2 && dict1Count == 1){
+        if(response == 'Y'){
+            demo = true;
+        }
+        else{
+            message = responses[0];
+        }
     }
 
-    twiml.message(message);
-    console.log(inputBool);
-    if (inputBool) {
-      req.session.counter = smsCount + 1;
+    if(demo && dict1Count <= 5){
+        message = dict1[dict1Count];
+        dict1Count ++;
     }
+    if(dict1Count > 5){
+        message = questions[questionCount];
+        questionCount ++;
+    }
+
+    if(questionCount == 2 && response == 'Y' && dict1Count > 5){
+        pref = true;
+    }
+    //Else skip
+
+    if(pref && dict2Count <= 6){
+        message = dict2[dict2Count];
+        dict2Count ++;
+    }
+    if(dict1Count > 6){
+        message = questions[questionCount];
+        questionCount ++;
+    }
+
+    if(questionCount == 3){
+        shelterChoice = response;
+        questionCount ++;
+    }
+    if(questionCount == 4){
+        message = questions[questionCount];
+        if(response == 'Y'){
+            message = responses[2];
+        }
+        questionCount ++;
+    }
+
+    if(questionCount > 4){
+        message = responses[3];
+    }
+
+
   
     res.writeHead(200, { 'Content-Type': 'text/xml' });
     res.end(twiml.toString());
