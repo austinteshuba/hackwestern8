@@ -55,7 +55,7 @@ app.post('/sms', (req, res) => {
         inSetup = false;
     }
 
-    else if(smsCount == 1 && req.body.Body.localeCompare('YES') && inSetup){
+    else if(smsCount == 1 && req.body.Body.toUpperCase() === 'YES' && inSetup){
         smsCount = 2;
         message = responses[smsCount];
     }
@@ -64,13 +64,13 @@ app.post('/sms', (req, res) => {
         inSetup = false;
     }
     //Skip preferences
-    else if(smsCount == 8 && req.body.Body.localeCompare('NO') && inSetup){
+    else if(smsCount == 8 && req.body.Body.toUpperCase() === 'NO' && inSetup){
         skipSetup = true;
         smsCount = 12;
         message = responses[12];
     }
     //Say yes to answering preferences
-    else if(smsCount == 8 && req.body.Body.localeCompare('YES') && inSetup){
+    else if(smsCount == 8 && req.body.Body.toUpperCase() === 'YES' && inSetup){
         message = responses[smsCount];
     }
     //Handle end of answering
@@ -80,7 +80,7 @@ app.post('/sms', (req, res) => {
         message = responses[11];
     }
     //Say yes to directions
-    else if(smsCount == 14 && req.body.Body.localeCompare('YES') && inSetup){
+    else if(smsCount == 14 && req.body.Body.toUpperCase() === 'YES' && inSetup){
         message = responses[14];
         smsCount = 15;
         inSetup = false;
