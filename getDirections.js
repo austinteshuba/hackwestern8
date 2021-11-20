@@ -16,10 +16,11 @@ function getDistancesToShelters(userLocation, shelterLocations) {
           const distances = directionsResponses.map((directionsResponse) => {
             const shelterLocation = directionsResponse.targetAddress;
             const body = directionsResponse.body;
-            // console.log(body);
+
             return {
               shelterLocation,
-              travelTime: parseTravelTime(body)
+              travelTime: parseTravelTime(body),
+              directions: parseDirections(body)
             };
           });
 
@@ -62,9 +63,31 @@ function getDirections(startingAddress, targetAddress) {
   });
 }
 
+function parseDirections(directionsObject) {
+  const routes = directionsObject.routes.sort((route1, route2) => travelTimeFromRoute(route1) - travelTimeFromRoute(route2));
+  const legs = routes[0].legs;
+
+  const setOfHtmlDirections = legs.map((leg) => {
+    return leg.steps.map((step) => `${step.html_instructions} (${step.distance.text})`);
+  });
+
+  const htmlDirections = [].concat(...setOfHtmlDirections);
+  let stepNumber = 1;
+  return htmlDirections.map((direction) => {
+    // font-size:0.9em is the styling passed by google for the final "destination will be on the left/right message"
+    return direction.replace('<div style="font-size:0.9em">', '. ').replace(/<\/?[^>]+(>|$)/g, "");
+  }).map((englishDirection) => {
+    return `${stepNumber++}. ${englishDirection}`;
+  });
+}
+
 function parseTravelTime(directionsObject) {
-  const routes = directionsObject.routes.sort((route1, route2) => route1.legs[0].duration.value - route2.legs[0].duration.value);
+  const routes = directionsObject.routes.sort((route1, route2) => travelTimeFromRoute(route1) - travelTimeFromRoute(route2));
   return routes[0].legs[0].duration.value/60; // return in minutes
+}
+
+function travelTimeFromRoute(route) {
+  return route.legs.reduce((sum, leg) => leg.duration.value + sum, 0);
 }
 
 getDistancesToShelters('453 St George, London ON', ['123 Richmond St, London ON', '513 First St, London ON'])
