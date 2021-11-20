@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "shelterbot-33158",
+  "private_key_id": "a034758ea4898bc2061454c5514a024bf36d06cc",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCGlbyaqcJCTs3j\n1v6VltWz5paWsE5TY+FfFMyLHE8wI8kfl1DvTHE97bRcOxqFqB9DGGN4UdVJ0XpA\n6izwj8RNVTAETLBYziswlbFqi6SdHO2J+TdSZFbjer7SWTa3ntAnueoa0qMEZ54Q\n7vfAj4Zdr6hLNljr+LB6Y+c400PpAEs1Eio81aXGql3Z9zeDSN4yOReiTrqNEWMU\nkueuMp4jswUPm/vpSugzokVidppFPERkqVbsKhco6A+osZTCSvRQct+S8Rg9sfNE\nMyuwQqRc+utR+nKlFeA37uaTnolQKO3ZNql/BdpXQV0YVu33q7kRJ2FIui7Q8IK0\nlQKYSUDlAgMBAAECggEABE+EoQiJvrbIR0FSL1I2NI2mFPFUhOe9/B4OAhuimVZg\nFqlcT9nT27RYHUcjAuppsUFf+DvYwsVD7uiBOXrwAjvAWWGSbrm7GOfb15+IOCRe\neFeZiG5LI9Hr4uVgHbKnafT9X6Vk+sW4gpmA08j/uFL2vI1Np6XevdYi0wdd6rcf\njYnnHoozu5mN9o4mKCZd44EFvXgoi0qDktSPyQYXy7PuCj0o+HkvRNKrYpB6Xg0z\ngrLQVzA5FVjgO0GDatS1LtPSibDWKNgHQIH3ZKDcNX8VIwamsi1OrNp9SqjnuI3A\nGlkru9SJbbuKrXRKuSWUiRnRvI67S/FEDGN3lfX26QKBgQC6slvf/mKI5b5IkFlZ\n3wIY2oM+CtdJ+7DrPtC5IyImb7zJxSG+IyveAtR2NCkcL1S0f8yV0YZxAlr8IFEK\niF0yuYCz+m0G5RMpAfV3W7MTttkkBCjJKzvSfkthFDxWEtto1b0ncSICgUuBTCbp\nEcpqmgiNGy+iJU6aMIfZ1yB/nQKBgQC4izv1AJaCI1gW8ODoGpKk9U0UH1HgAMSp\ntugwKK3tXdT9H2GxKQ+iJj3k0foU4g3J0OHz/aLQIEZz+aqjh/9BaFEUiK/UCk98\nQIb+Md+eq9lHUO84TLJIaHIKJj0hGm0jb2T36pdAnZv3VxyTX2o2bXut07PkBZ6j\nCCFJD9YX6QKBgAFSYfQkCO6PMdmxq/BG8+zZHzTBPuT3Mzl3KGMnLIa5I80J6ENA\nXH8l5fswQ1o/u4nLndcxtJH4Qkymrew1KvPA/HhJvZve41PW/7XooEvzb3Yh0Wgb\nNkE3Q7FcQ1EYsRT87mnpEySRZcd0kpHz3ksC7CyTlLLBMN1Gmq+gJkrBAoGBAI9V\nZW431K6jcQnwcV8VNIz3EbTtVpRbRGRk8hZloiFY3dL0CtalA8V3Wl9dT5Xktbzo\nhncRquFoEBCH/Ccju/g7Y65FM/vHPlFNdQv+BKei5hHkJMlfmKFwrhJ//L63XclF\n/fAovu2q/LaxbDpyw3Yetw8d/Py/+KS77c5nhGvxAoGBAKm/EeyOfr8OkHzcEN9K\nssdPcFg/sH6vwG+hp2KxAi6agyq85QPxJQ4OU9FrWG3TDJNIxItG9rLFhwZDANvQ\nN+yPdgjgVZ+V21ybCU1VzA8dF52T7JnHN84KCxEP8lE9zMa1fwLHzqzlgHf21iuE\n0a50dL2gJ2OrrQcS6rJBJRt1\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-qv8xh@shelterbot-33158.iam.gserviceaccount.com",
+  "client_id": "108161685299572570612",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-qv8xh%40shelterbot-33158.iam.gserviceaccount.com"
+}
