@@ -3,8 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <title>Shelterfirst</title>
+    <link rel="stylesheet" href="styles/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Hello World!</h1>
+    <h1 class="page-title">Welcome to shelterFirst</h1>
+    <h2>Canada's first real-time emergency shelter management system</h2>
+    <section class="select-shelter">
+        <p class="section-header">Existing Shelter Accounts</p>
+        <div class="form-input">
+            <label class="form-label" for="shelters">Select your shelter</label>
+            <select name="shelters" id="shelters">
+                <!-- TODO: Add the actual shelter names here -->
+                <option value="rigatoni">Rigatoni</option>
+                <option value="dave">Dave</option>
+                <option value="pumpernickel">Pumpernickel</option>
+                <option value="reeses">Reeses</option>
+            </select>
+        </div>
+        <div class="form-input">
+            <label class="form-label" for="password">Enter your password</label>
+            <input name="password" id="password" type="text"/>
+        </div>
+    </section>
+    <section class="add-shelter">
+        <p class="section-header">New Shelter Account</p>
+        <div class="form-input">
+            <label class="form-label" for="invite-code">Enter your invite code</label>
+            <input name="invite-code" id="invite-code" type="text" />
+        </div>
+    </section>
 </body>
 </html>
