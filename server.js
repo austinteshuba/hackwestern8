@@ -9,9 +9,14 @@ const app = express();
 app.use(session({secret: 'shelter'}));
 app.use(bodyParser.urlencoded({ extended: false }));
 
+const accountSid = "AC5b0ffb80bde4d421806808422efbc3af";
+const authToken = "a263361b2337e972e1f28c4a3f1f948f";
+const client = require('twilio')(accountSid, authToken);
+
+var phoneNum = "";
+
 var inSetup = true;
 var skipSetup = false;
-var needsDirections = false;
 var isNewUser = false;
 //Needs logic for first time user or not
 
@@ -40,7 +45,10 @@ const responses = {
 
 app.post('/sms', (req, res) => {
 
+    phoneNum = req.body.From;
+
     //Check if user is new
+        //If database contains phoneNum, skip the dictionary parts
 
     var smsCount = req.session.counter || 0;
     const twiml = new MessagingResponse();
@@ -65,7 +73,7 @@ app.post('/sms', (req, res) => {
         message = responses[10];
     }
     //Say yes to answering preferences
-    else if(smsCount == 6 && req.body.BODY == 'YES' && inSetup){
+    else if(smsCount == 6 && req.body.Body == 'YES' && inSetup){
         message = responses[smsCount];
     }
     //Handle end of answering
@@ -81,7 +89,7 @@ app.post('/sms', (req, res) => {
         inSetup = false;
     }
     //Say no to directions
-    else if(smsCount == 12 && req.body.BODY == 'NO' && inSetup){
+    else if(smsCount == 12 && req.body.Body == 'NO' && inSetup){
         message = responses[13];
         smsCount = 13;
         inSetup = false;
@@ -90,7 +98,9 @@ app.post('/sms', (req, res) => {
         message = responses[smsCount];
     }
     if(!inSetup){
-        message = "OK";
+        console.log('*********************************');
+        console.log(phoneNum);
+        message = "OK " + phoneNum;
     }
 
     twiml.message(message);
