@@ -97,39 +97,46 @@ app.post('/sms', (req, res) => {
     if(demo){
         switch (dict1Count){
             case 1:
+                break;
+            case 2:
                 if (response == 'Y'){
                     prereq.push("lgbtq");
                 }
                 break;
-            case 2:
+            case 3:
                 if (response == 'Y'){
                     prereq.push("youth");
                 }
                 break;
-            case 3:
+            case 4:
                 if (response == 'Y'){
                     prereq.push("family_friendly");
                 }
                 break;
-            case 4:
+            case 5:
                 if (response == 'Y'){
                     prereq.push("indigenous");
                 }
                 break;
-            case 5:
+            default:
                 if (response == 'Y'){
                     prereq.push("female");
                 }
-                break;
-            default:
                 message = questions[questionCount]; 
                 //questionCount should be 2 at this point - ask for preferences
-                //console.log("Everything okay?: 2= " + questionCount)
+                console.log("Everything okay?: 2= " + questionCount)
                 demo = false;
                 break;
         }
+        if(demo){
+            message = dict1[dict1Count];
+        }
         dict1Count ++
-    } else if (dict1Count > 1 && dict2Count == 1){ //Move on to next question (3)
+    } 
+    else if (dict1Count > 1 && dict2Count == 1){ //Move on to next question (3)
+        console.log("---");
+        console.log(phoneNum);
+        console.log(prereq);
         questionCount++;
     }
     
@@ -147,25 +154,27 @@ app.post('/sms', (req, res) => {
     if(pref){
         switch (dict2Count){
             case 1:
-                city = response;
                 break;
             case 2:
+                city = response;
+                break;
+            case 3:
                 if (response == 'Y'){
                     quiet = true;
                 }
                 break;
-            case 3:
+            case 4:
                 if (response == 'Y'){
                     meal = true;
                 }
                 break;
-            case 4:
+            case 5:
                 neighbourhood = response;
                 break;
-            case 5:
+            case 6:
                 sleep = response;
                 break;
-            case 6:
+            case 7:
                 wake = response;
                 break;
             default:
@@ -174,6 +183,9 @@ app.post('/sms', (req, res) => {
                 //console.log("Everything okay?: 3= " + questionCount)
                 pref = false;
                 break;
+        }
+        if(pref){
+            message = dict2[dict2Count];
         }
         dict2Count ++;
     } else if (dict1Count > 1 && dict2Count > 1){
