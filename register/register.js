@@ -55,6 +55,7 @@ function inputShelter() {
     });
 }
 
+// validConstraints = ["youth", "family_friendly", "lgbtq", "indigenous", "female"]
 // Manually register users with command line input
 function inputUser(){
     prompt.get(['phone', 'city', 'meal', 'sleepTime', 'quiet', 'wakeTime', 'prereq', 'neighbourhood'], function(err, result){
@@ -66,7 +67,7 @@ function inputUser(){
         var sleep = !result.sleepTime ? null : parseFloat(result.sleepTime);
         var wake = !result.wakeTime ? null : Boolean(result.wakeTime);
         var prereq = !result.prereq ? [] : result.prereq.split(",").forEach((str)=> str.toLowerCase().trim());
-        setUser(phone, city, meal, wake, quiet, sleep, neighbourhood, prereq, visited)
+        setUser(phone, city, meal, wake, quiet, sleep, neighbourhood, prereq)
     });
 }
 
