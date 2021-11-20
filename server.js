@@ -20,9 +20,6 @@ var wake = -1;
 var prereq = [];
 var shelterChoice = -1;
 
-//prereqs
-var lgbtq = ""
-
 //Needs logic for first time user or not
 
 var demo = false;
@@ -40,7 +37,7 @@ const dict1 = {
     1: "LGBTQ+",
     2: "Youth",
     3: "Family",
-    4: "Addiction",
+    4: "Indigenous",
     5: "Female",
 }
 
@@ -89,6 +86,7 @@ app.post('/sms', (req, res) => {
     else if(questionCount == 2 && dict1Count == 1){
         if(response == 'Y'){
             demo = true;
+            //Go through demo toggle
         }
         else{
             message = responses[1];
@@ -100,50 +98,98 @@ app.post('/sms', (req, res) => {
         switch (dict1Count){
             case 1:
                 if (response == 'Y'){
-
+                    prereq.push("lgbtq");
                 }
+                break;
+            case 2:
+                if (response == 'Y'){
+                    prereq.push("youth");
+                }
+                break;
+            case 3:
+                if (response == 'Y'){
+                    prereq.push("family_friendly");
+                }
+                break;
+            case 4:
+                if (response == 'Y'){
+                    prereq.push("indigenous");
+                }
+                break;
+            case 5:
+                if (response == 'Y'){
+                    prereq.push("female");
+                }
+                break;
+            default:
+                message = questions[questionCount]; 
+                //questionCount should be 2 at this point - ask for preferences
+                //console.log("Everything okay?: 2= " + questionCount)
+                demo = false;
+                break;
         }
-
-
-
-        if(dict1Count <= 5){
-            message = dict1[dict1Count];
-            dict1Count ++;
-        }
-        else{
-        //console.log(questions[2]);
-            message = questions[2];
-            dict1Count ++;
-            demo = false;
-        }
-    }
-    else if(dict1Count > 1 && dict2Count == 1){
+        dict1Count ++
+    } else if (dict1Count > 1 && dict2Count == 1){ //Move on to next question (3)
         questionCount++;
     }
     
-    if(questionCount == 3 && dict2Count == 1){
+    if(questionCount == 3 && dict2Count == 1){ //Catch response for preferences
         if(response == 'Y'){
             pref = true;
+            //Go through pref toggle
         }
         else {
-            questionCount ++;
+            //Skip to next question (4)
+            questionCount ++; 
         }
     }
-    
-    //Else skip
+
     if(pref){
-        if(dict2Count <= 6){
-            message = dict2[dict2Count];
-            dict2Count ++;
+        switch (dict2Count){
+            case 1:
+                city = response;
+                break;
+            case 2:
+                if (response == 'Y'){
+                    quiet = true;
+                }
+                break;
+            case 3:
+                if (response == 'Y'){
+                    meal = true;
+                }
+                break;
+            case 4:
+                neighbourhood = response;
+                break;
+            case 5:
+                sleep = response;
+                break;
+            case 6:
+                wake = response;
+                break;
+            default:
+                message = questions[questionCount]; 
+                //questionCount should be 3 at this point - choose shelter
+                //console.log("Everything okay?: 3= " + questionCount)
+                pref = false;
+                break;
         }
-        else {
-            message = questions[questionCount]; //choose shelter
-            dict2Count ++;
-            pref = false;
-        }
-    }
-    else if(dict1Count > 1 && dict2Count > 1){
+        dict2Count ++;
+    } else if (dict1Count > 1 && dict2Count > 1){
+        //Move on to next question (4)
         questionCount ++;
+        //Check preferences
+        var phoneNum = "";
+var city = "";
+var quiet = false;
+var meal = false;
+var neighbourhood = "";        
+var sleep = -1;
+var wake = -1;
+var prereq = [];
+var shelterChoice = -1;
+        console.log(phoneNum + "," + city + "," + quiet + "," + meal + "," + neighbourhood + "," + sleep + "," + wake + "," + prereq);
     }
 
     console.log(questionCount);
