@@ -124,7 +124,7 @@ app.post('/sms', (req, res) => {
                 }
                 message = questions[questionCount]; 
                 //questionCount should be 2 at this point - ask for preferences
-                console.log("Everything okay?: 2= " + questionCount)
+                //console.log("Everything okay?: 2= " + questionCount)
                 demo = false;
                 break;
         }
@@ -174,10 +174,8 @@ app.post('/sms', (req, res) => {
             case 6:
                 sleep = response;
                 break;
-            case 7:
-                wake = response;
-                break;
             default:
+                wake = response;
                 message = questions[questionCount]; 
                 //questionCount should be 3 at this point - choose shelter
                 //console.log("Everything okay?: 3= " + questionCount)
