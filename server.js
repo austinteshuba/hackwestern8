@@ -92,38 +92,48 @@ app.post('/sms', (req, res) => {
         }
     }
 
-    if(demo && dict1Count <= 5){
-        message = dict1[dict1Count];
-        dict1Count ++;
+    if(demo){
+        if(dict1Count <= 5){
+            message = dict1[dict1Count];
+            dict1Count ++;
+        }
+        else{
+        //console.log(questions[2]);
+            message = questions[2];
+            dict1Count ++;
+            demo = false;
+        }
     }
-    else if(dict1Count > 5){
-        message = questions[questionCount];
-        questionCount ++;
+    else if(dict1Count > 1){
+        questionCount++;
     }
-    if(questionCount == 2 && response == 'Y' && dict1Count > 5){
+    if(questionCount == 3){
         if(response == 'Y'){
             pref = true;
         }
         else{
-            dict2Count = 7;
+            questionCount = 4;
         }
     }
+    
+    //HERE
     //Else skip
 
     if(pref && dict2Count <= 6){
+        console.log(questionCount);
         message = dict2[dict2Count];
         dict2Count ++;
     }
-    if(dict2Count > 6){
+    else if(dict2Count > 6){
         message = questions[questionCount];
         questionCount ++;
     }
 
-    if(questionCount == 3){
+    if(questionCount == 4){
         shelterChoice = response;
         questionCount ++;
     }
-    if(questionCount == 4){
+    if(questionCount == 5){
         message = questions[questionCount];
         if(response == 'Y'){
             message = responses[2];
@@ -131,7 +141,7 @@ app.post('/sms', (req, res) => {
         questionCount ++;
     }
 
-    if(questionCount > 4){
+    if(questionCount > 5){
         message = responses[3];
     }
 
