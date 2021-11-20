@@ -9,49 +9,91 @@ const app = express();
 app.use(session({secret: 'shelter'}));
 app.use(bodyParser.urlencoded({ extended: false }));
 
-var inSetup = false;
+var inSetup = true;
+var skipSetup = false;
+var needsDirections = false;
+var isNewUser = false;
+//Needs logic for first time user or not
+
+const responses = {
+    0: "Welcome to Unhomed Helper. Would you like to be matched to an emergency homeless shelter? Answer YES or NO.",
+    1: "You will not be matched to an emergency homeless shelter.",
+    2: "Great. Would you like to be matched to the nearest shelter, or the best shelter that fits your preferences? Answer BEST or NEAREST",
+    3: "Got it. Now we need to learn a bit more about you. \n\nQuestion 1. Answer YES or NO",
+    4: "Question 2. Answer YES or NO",
+    5: "Thank you! We would like to know about your preferences now. \nText YES to agree or NO to skip this step.",
+    6: "Do you have a religious affiliation? \nAnswer YES or NO",
+    7: "Do you prefer a specific area of town? \nAnswer YES or NO",
+    8: "What time do you like to go to bed? \nAnswer with a number",
+    9: "Thank you for your preferences. Here are a list of shelters that you are eligible for, "
+    + "along with their current capacities. \n\n LIST OF SHELTERS 1-5 HERE \n\nWhich shelter would you like to match to? " + 
+    "Answer with a number between 1-5",
+    10: "You've skipped the setup process. Here are a list of shelters that you are eligible for, "
+    + "along with their current capacities. \n\n LIST OF SHELTERS 1-5 HERE \n\nWhich shelter would you like to match to? " + 
+    "Answer with a number between 1-5",
+    11: "Alright, sounds great. Do you need directions? Answer YES or NO",
+    12: "DIRECTIONS GO HERE." + "\n\n\nWe will keep you updated on the capacity of this shelter. Your spot has been removed from our count"
+    + " for the next thirty minutes, so other ShelterFirst users will not be matched to your specific spot, but there are no guarantees about availability.",
+    13: "We will keep you updated on the capacity of this shelter. Your spot has been removed from our count"
+    + " for the next thirty minutes, so other ShelterFirst users will not be matched to your specific spot, but there are no guarantees about availability.",
+}
 
 app.post('/sms', (req, res) => {
-    const smsCount = req.session.counter || 0;
-    const twiml = new MessagingResponse();
 
-    if(smsCount === 0){
-        twiml.message("\n\nWelcome to Unhomed Helper. Would you like to be matched to an emergency homeless shelter? Answer YES or NO.");
-        inSetup = true;
-    }
-    else if(smsCount === 1 && req.body.Body == 'NO' && inSetup){
-        twiml.message("\n\nYou will not be matched to an emergency homeless shelter.");
+    //Check if user is new
+
+    var smsCount = req.session.counter || 0;
+    const twiml = new MessagingResponse();
+    var message = "";
+
+    if(smsCount >= 13){
         inSetup = false;
     }
-    else if(smsCount === 1 && req.body.Body == 'YES' && inSetup){
-        twiml.message("\n\nGreat. Would you like to be matched to the nearest shelter, or the best shelter that fits your preferences? Answer BEST or NEAREST");
+
+    else if(smsCount == 1 && req.body.Body == 'YES' && inSetup){
+        smsCount = 2;
+        message = responses[smsCount];
     }
-    else if(smsCount === 2 && inSetup){
-        twiml.message("\n\nGot it. Now we need to learn a bit more about you \n\nQuestion 1. Answer YES or NO");
+    else if(smsCount == 1 && inSetup){
+        message = responses[1];
+        inSetup = false;
     }
-    else if(smsCount === 3 && inSetup){
-        twiml.message("\n\nQuestion 2. Answer YES or NO");
+    //Skip preferences
+    else if(smsCount == 6 && req.body.Body == 'NO' && inSetup){
+        skipSetup = true;
+        smsCount = 10;
+        message = responses[10];
     }
-    else if(smsCount === 4 && inSetup){
-        twiml.message("\n\nQuestion 3. \n1 - Option 1 \n2 - Option 2 \n3 - Option 3 \n4 - Option 4 \n\nRespond with a number between 1-4");
+    //Say yes to answering preferences
+    else if(smsCount == 6 && req.body.BODY == 'YES' && inSetup){
+        message = responses[smsCount];
+    }
+    //Handle end of answering
+    else if(!skipSetup && smsCount == 9){
+        skipSetup = true;
+        smsCount = 10;
+        message = responses[9];
+    }
+    //Say yes to directions
+    else if(smsCount == 12 && req.body.BODY == 'YES' && inSetup){
+        message = responses[12];
+        smsCount = 13;
+        inSetup = false;
+    }
+    //Say no to directions
+    else if(smsCount == 12 && req.body.BODY == 'NO' && inSetup){
+        message = responses[13];
+        smsCount = 13;
+        inSetup = false;
     }
     else if(inSetup){
-        twiml.message("\n\ncool");
+        message = responses[smsCount];
     }
-    else if (req.body.Body == 'SHELTER') {
-      twiml.message('\nHere is the top shelter for you: ' + 
-      '\n\nName: Unity Project \nDistance: 3km \nAvailable Beds: 12 \nDirections: .......');
-    } else if (req.body.Body == 'INFO') {
-      twiml.message('We respond to the following messages: ' + 
-      'INFO - get information on messages\n' + 
-      'SHELTER - find shelters near you\n' + 
-      'PROFILE - change your preferences\n' + 
-      'STOP - opt out of messages');
-    } else {
-      twiml.message(
-        'Sorry, we did\'t understand that, please try a different message. Text INFO for information on messages.'
-      );
+    if(!inSetup){
+        message = "OK";
     }
+
+    twiml.message(message);
 
     req.session.counter = smsCount + 1;
   
@@ -61,5 +103,4 @@ app.post('/sms', (req, res) => {
 
 http.createServer(app).listen(1337, () => {
   console.log('Express server listening on port 1337');
-});
-
+});  
