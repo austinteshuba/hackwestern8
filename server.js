@@ -16,7 +16,7 @@ var skipSetup = false;
 //Needs logic for first time user or not
 
 const responses = {
-    0: "Welcome to Unhomed Helper. Would you like to be matched to an emergency homeless shelter? Answer YES or NO.",
+    0: "\nWelcome to ShelterFirst! \nWould you like to be matched to an emergency homeless shelter? \nAnswer YES or NO.",
     1: "You will not be matched to an emergency homeless shelter.",
     2: "Now we need to learn a bit more about you. \n\nQuestion 1. Answer YES or NO",
     3: "Question 2. Answer YES or NO",
@@ -55,7 +55,7 @@ app.post('/sms', (req, res) => {
         inSetup = false;
     }
 
-    else if(smsCount == 1 && req.body.Body == 'YES' && inSetup){
+    else if(smsCount == 1 && req.body.Body.localeCompare('YES') && inSetup){
         smsCount = 2;
         message = responses[smsCount];
     }
@@ -95,9 +95,7 @@ app.post('/sms', (req, res) => {
         message = responses[smsCount];
     }
     if(!inSetup){
-        console.log('*********************************');
-        console.log(phoneNum);
-        message = "OK " + phoneNum;
+        message = "OK";
     }
 
     twiml.message(message);
