@@ -54,13 +54,13 @@ const questions = {
     1: "Welcome & Set up",
     2: "Fill preferences",
     3: "Choose shelter",
-    4: "Directions",
+    4: "Directions ask",
     5: "Location"
 }
 
 const responses = {
     1: "NO - 1",
-    2: "Directions",
+    2: "Directions give",
     3: "We will keep you updated"
 }
 
@@ -104,43 +104,50 @@ app.post('/sms', (req, res) => {
             demo = false;
         }
     }
-    else if(dict1Count > 1){
+    else if(dict1Count > 1 && dict2Count == 1){
         questionCount++;
     }
-    if(questionCount == 3){
+    
+    if(questionCount == 3 && dict2Count == 1){
         if(response == 'Y'){
             pref = true;
         }
-        else{
-            questionCount = 4;
+        else {
+            questionCount ++;
         }
     }
     
-    //HERE
     //Else skip
-
-    if(pref && dict2Count <= 6){
-        console.log(questionCount);
-        message = dict2[dict2Count];
-        dict2Count ++;
+    if(pref){
+        if(dict2Count <= 6){
+            message = dict2[dict2Count];
+            dict2Count ++;
+        }
+        else {
+            message = questions[questionCount]; //choose shelter
+            dict2Count ++;
+            pref = false;
+        }
     }
-    else if(dict2Count > 6){
-        message = questions[questionCount];
+    else if(dict1Count > 1 && dict2Count > 1){
         questionCount ++;
     }
 
+    console.log(questionCount);
     if(questionCount == 4){
+        message = questions[questionCount];
         shelterChoice = response;
         questionCount ++;
     }
-    if(questionCount == 5){
-        message = questions[questionCount];
+    else if(questionCount == 5){
+        message = questions[5];
+        questionCount ++;
+    }
+    else if(questionCount == 6){
         if(response == 'Y'){
             message = responses[2];
         }
-        questionCount ++;
     }
-
     if(questionCount > 5){
         message = responses[3];
     }
