@@ -64,6 +64,8 @@ const responses = {
     3: "We will keep you updated"
 }
 
+var message = "def";
+
 app.post('/sms', (req, res) => {
 
     phoneNum = req.body.From;
@@ -74,19 +76,19 @@ app.post('/sms', (req, res) => {
 
     var smsCount = req.session.counter || 0;
     const twiml = new MessagingResponse();
-    var message = "";
     var response = req.body.Body.toUpperCase();
 
     if(questionCount == 1){
         message = questions[1];
         questionCount ++;
     }
-    if(questionCount == 2 && dict1Count == 1){
+    else if(questionCount == 2 && dict1Count == 1){
         if(response == 'Y'){
             demo = true;
         }
         else{
-            message = responses[0];
+            message = responses[1];
+            inSetup = false;
         }
     }
 
@@ -94,13 +96,17 @@ app.post('/sms', (req, res) => {
         message = dict1[dict1Count];
         dict1Count ++;
     }
-    if(dict1Count > 5){
+    else if(dict1Count > 5){
         message = questions[questionCount];
         questionCount ++;
     }
-
     if(questionCount == 2 && response == 'Y' && dict1Count > 5){
-        pref = true;
+        if(response == 'Y'){
+            pref = true;
+        }
+        else{
+            dict2Count = 7;
+        }
     }
     //Else skip
 
@@ -108,7 +114,7 @@ app.post('/sms', (req, res) => {
         message = dict2[dict2Count];
         dict2Count ++;
     }
-    if(dict1Count > 6){
+    if(dict2Count > 6){
         message = questions[questionCount];
         questionCount ++;
     }
@@ -129,7 +135,8 @@ app.post('/sms', (req, res) => {
         message = responses[3];
     }
 
-
+    twiml.message(message);
+    console.log(message);
   
     res.writeHead(200, { 'Content-Type': 'text/xml' });
     res.end(twiml.toString());
