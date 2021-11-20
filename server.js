@@ -43,20 +43,20 @@ const dict1 = {
 };
 
 const dict2 = {
-  1: "City",
-  2: "Quiet",
-  3: "Meal",
-  4: "Neighborhood",
-  5: "Sleep",
-  6: "Wake",
+  1: "What city are you in?",
+  2: "Do you prefer quiet? [Y/N]",
+  3: "Do you need a meal? [Y/N]",
+  4: "What neighbourhood do you want to be in?",
+  5: "what time do you sleep?",
+  6: "What time do you wake up?",
 };
 
 const questions = {
-  1: "Welcome & Set up",
-  2: "Fill preferences",
-  3: "Choose shelter",
-  4: "Directions ask",
-  5: "Location",
+  1: "Welcome to ShelterFirst! Let's get you set up. \nReply [Y] to continue, and [N] to abandon this session.",
+  2: "Now we will ask you some of your preferences, which will match you to a personalized shelter. \nReply [Y] to continue, and [N] to skip this step.",
+  3: "Here is a list of shelters we found! Choose you're preference: ", //TODO: this question needs data from the database after sending in the user profile
+  4: "Would you like directions to the shelter? [Y/N]",
+  5: "What intersection are you closest to? [ABC Street and XYZ Avenue]",
 };
 
 const responses = {
