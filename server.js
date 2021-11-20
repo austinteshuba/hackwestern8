@@ -9,35 +9,32 @@ const app = express();
 app.use(session({secret: 'shelter'}));
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const accountSid = "AC5b0ffb80bde4d421806808422efbc3af";
-const authToken = "a263361b2337e972e1f28c4a3f1f948f";
-const client = require('twilio')(accountSid, authToken);
-
 var phoneNum = "";
 
 var inSetup = true;
 var skipSetup = false;
-var isNewUser = false;
 //Needs logic for first time user or not
 
 const responses = {
     0: "Welcome to Unhomed Helper. Would you like to be matched to an emergency homeless shelter? Answer YES or NO.",
     1: "You will not be matched to an emergency homeless shelter.",
-    2: "Great. Would you like to be matched to the nearest shelter, or the best shelter that fits your preferences? Answer BEST or NEAREST",
-    3: "Got it. Now we need to learn a bit more about you. \n\nQuestion 1. Answer YES or NO",
-    4: "Question 2. Answer YES or NO",
-    5: "Thank you! We would like to know about your preferences now. \nText YES to agree or NO to skip this step.",
-    6: "Do you have a religious affiliation? \nAnswer YES or NO",
-    7: "Do you prefer a specific area of town? \nAnswer YES or NO",
-    8: "What time do you like to go to bed? \nAnswer with a number",
-    9: "Thank you for your preferences. Here are a list of shelters that you are eligible for, "
+    2: "Now we need to learn a bit more about you. \n\nQuestion 1. Answer YES or NO",
+    3: "Question 2. Answer YES or NO",
+    4: "Question 3",
+    5: "Question 4",
+    6: "Question 5",
+    7: "Thank you! We would like to know about your preferences now. \nText YES to agree or NO to skip this step.",
+    8: "Do you have a religious affiliation? \nAnswer YES or NO",
+    9: "Do you prefer a specific area of town? \nAnswer YES or NO",
+    10: "What time do you like to go to bed? \nAnswer with a number",
+    11: "Thank you for your preferences. Here are a list of shelters that you are eligible for, "
     + "along with their current capacities. \n\n LIST OF SHELTERS 1-5 HERE \n\nWhich shelter would you like to match to? " + 
     "Answer with a number between 1-5",
-    10: "You've skipped the setup process. Here are a list of shelters that you are eligible for, "
+    12: "You've skipped the setup process. Here are a list of shelters that you are eligible for, "
     + "along with their current capacities. \n\n LIST OF SHELTERS 1-5 HERE \n\nWhich shelter would you like to match to? " + 
     "Answer with a number between 1-5",
-    11: "Alright, sounds great. Do you need directions? Answer YES or NO",
-    12: "DIRECTIONS GO HERE." + "\n\n\nWe will keep you updated on the capacity of this shelter. Your spot has been removed from our count"
+    13: "Alright, sounds great. Do you need directions? Answer YES or NO",
+    14: "DIRECTIONS GO HERE." + "\n\n\nWe will keep you updated on the capacity of this shelter. Your spot has been removed from our count"
     + " for the next thirty minutes, so other ShelterFirst users will not be matched to your specific spot, but there are no guarantees about availability.",
     13: "We will keep you updated on the capacity of this shelter. Your spot has been removed from our count"
     + " for the next thirty minutes, so other ShelterFirst users will not be matched to your specific spot, but there are no guarantees about availability.",
@@ -54,7 +51,7 @@ app.post('/sms', (req, res) => {
     const twiml = new MessagingResponse();
     var message = "";
 
-    if(smsCount >= 13){
+    if(smsCount >= 15){
         inSetup = false;
     }
 
@@ -67,31 +64,31 @@ app.post('/sms', (req, res) => {
         inSetup = false;
     }
     //Skip preferences
-    else if(smsCount == 6 && req.body.Body == 'NO' && inSetup){
+    else if(smsCount == 8 && req.body.Body == 'NO' && inSetup){
         skipSetup = true;
-        smsCount = 10;
-        message = responses[10];
+        smsCount = 12;
+        message = responses[12];
     }
     //Say yes to answering preferences
-    else if(smsCount == 6 && req.body.Body == 'YES' && inSetup){
+    else if(smsCount == 8 && req.body.Body == 'YES' && inSetup){
         message = responses[smsCount];
     }
     //Handle end of answering
-    else if(!skipSetup && smsCount == 9){
+    else if(!skipSetup && smsCount == 11){
         skipSetup = true;
-        smsCount = 10;
-        message = responses[9];
+        smsCount = 12;
+        message = responses[11];
     }
     //Say yes to directions
-    else if(smsCount == 12 && req.body.BODY == 'YES' && inSetup){
-        message = responses[12];
-        smsCount = 13;
+    else if(smsCount == 14 && req.body.BODY == 'YES' && inSetup){
+        message = responses[14];
+        smsCount = 15;
         inSetup = false;
     }
     //Say no to directions
-    else if(smsCount == 12 && req.body.Body == 'NO' && inSetup){
-        message = responses[13];
-        smsCount = 13;
+    else if(smsCount == 14 && req.body.Body == 'NO' && inSetup){
+        message = responses[15];
+        smsCount = 15;
         inSetup = false;
     }
     else if(inSetup){
