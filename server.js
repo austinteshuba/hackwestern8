@@ -180,15 +180,6 @@ app.post('/sms', (req, res) => {
         //Move on to next question (4)
         questionCount ++;
         //Check preferences
-        var phoneNum = "";
-var city = "";
-var quiet = false;
-var meal = false;
-var neighbourhood = "";        
-var sleep = -1;
-var wake = -1;
-var prereq = [];
-var shelterChoice = -1;
         console.log(phoneNum + "," + city + "," + quiet + "," + meal + "," + neighbourhood + "," + sleep + "," + wake + "," + prereq);
     }
 
