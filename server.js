@@ -20,6 +20,9 @@ var wake = -1;
 var prereq = [];
 var shelterChoice = -1;
 
+//prereqs
+var lgbtq = ""
+
 //Needs logic for first time user or not
 
 var demo = false;
@@ -79,7 +82,8 @@ app.post('/sms', (req, res) => {
     var response = req.body.Body.toUpperCase();
 
     if(questionCount == 1){
-        message = questions[1];
+        //Welcome and demographics set up
+        message = questions[1]; 
         questionCount ++;
     }
     else if(questionCount == 2 && dict1Count == 1){
@@ -88,11 +92,20 @@ app.post('/sms', (req, res) => {
         }
         else{
             message = responses[1];
-            inSetup = false;
+            inSetup = false; //profile already created, skip straight to choose shelters
         }
     }
 
     if(demo){
+        switch (dict1Count){
+            case 1:
+                if (response == 'Y'){
+
+                }
+        }
+
+
+
         if(dict1Count <= 5){
             message = dict1[dict1Count];
             dict1Count ++;
