@@ -1,6 +1,6 @@
 const http = require("http");
 const express = require("express");
-const backend = require('./register/register')
+const backend = require("./register/register");
 const session = require("express-session");
 const MessagingResponse = require("twilio").twiml.MessagingResponse;
 const bodyParser = require("body-parser");
@@ -20,6 +20,7 @@ var sleep = -1;
 var wake = -1;
 var prereq = [];
 var shelterChoice = -1;
+var location = "";
 
 //Needs logic for first time user or not
 
@@ -32,12 +33,13 @@ var dict1Count = 1;
 var dict2Count = 1;
 var responseCount = 1;
 var skippedPref = false;
+var getLocation = false;
 
 const dict1 = {
   // Y/N/P
   // Demographics
-  1: "Are you LGBTQ+? \nAnswer [Y] for Yes, [N] for No, and [P] to Pass.",
-  2: "Are you a minor below the age of 18? \nAnswer [Y]/[N]/[P].",
+  1: "Great! Now we will ask some optional but recommended demographic questions. Do you identify as LGBTQ+? \nAnswer [Y] for Yes, [N] for No, and [P] to Pass.",
+  2: "Are you below the age of 18? \nAnswer [Y]/[N]/[P].",
   3: "Are you accompanied by dependents below the age of 18? \nAnswer [Y]/[N]/[P].",
   4: "Do you identify as indigenous? \nAnswer [Y]/[N]/[P].",
   5: "Do you identify as female? \nAnswer [Y]/[N]/[P].",
@@ -54,18 +56,19 @@ const dict2 = {
 
 const questions = {
   1: "Welcome to ShelterFirst! Let's get you set up. \nReply [Y] to continue, and [N] to abandon this session.",
-  2: "Now we will ask you some of your preferences, which will match you to a personalized shelter. \nReply [Y] to continue, and [N] to skip this step.",
-  3: "Here is a list of shelters we found! Relpy with the number of your preferred shelter: ", //TODO: this question needs data from the database after sending in the user profile
-  4: "Would you like directions to the shelter? [Y/N]",
-  5: "What intersection are you closest to? [ABC Street and XYZ Avenue]",
+  2: "To help us look for shelters near you, we need your approximate location. What intersection are you closest to right now? [ABC Street and XYZ Avenue]",
+  3: "Now we will ask you some of your preferences, which will match you to a personalized shelter. \nReply [Y] to continue, and [N] to skip this step.",
+  4: "Here is a list of shelters we found! Reply with the number of your preferred shelter: ", //TODO: this question needs data from the database after sending in the user profile
+  5: "Would you like directions to the shelter? [Y/N]",
 };
 
 const responses = {
   1: "You will not be set up with a profile on ShelterFirst!",
   2: "Here are the directions to [location of shelter]: \n\nGoogle Maps Directions\n\n\n",
-  3: "We will keep you updated on the capacity of this shelter. Your spot has been removed from our "
-  + "count for the next thirty minutes, so other ShelterFirst users will not be matched to your "
-  + "specific spot, but there are no guarantees about availability.",
+  3:
+    "We will keep you updated on the capacity of this shelter. Your spot has been removed from our " +
+    "count for the next thirty minutes, so other ShelterFirst users will not be matched to your " +
+    "specific spot, but there are no guarantees about availability.",
 };
 
 var message = "def";
@@ -76,24 +79,29 @@ app.post("/sms", async (req, res) => {
   //Check if user is new
   //If database contains phoneNum, skip the dictionary parts
   // req.body.Body.toUpperCase()
-  inSetup = user == null;
+  //inSetup = user == null;
   var smsCount = req.session.counter || 0;
   const twiml = new MessagingResponse();
   var response = req.body.Body.toUpperCase();
 
   if (inSetup) {
-    if (questionCount == 1) {
+    if (questionCount == 1 && !getLocation) {
       //Welcome and demographics set up
       message = questions[1];
       questionCount++;
-    } else if (questionCount == 2 && dict1Count == 1) {
+      getLocation = true;
+    } else if (questionCount == 2 && getLocation) {
       if (response == "Y") {
-        demo = true;
-        //Go through demo toggle
+        message = questions[2];
+        questionCount++;
       } else {
-        message = responses[1];
+        message = responses[1]; //Do not set up
         inSetup = false; //profile already created, skip straight to choose shelters
       }
+    } else if (questionCount == 3 && dict1Count == 1) {
+      location = response;
+      demo = true;
+      //Go through demo toggle
     }
 
     if (demo) {
@@ -124,9 +132,9 @@ app.post("/sms", async (req, res) => {
           if (response == "Y") {
             prereq.push("female");
           }
-          message = questions[questionCount];
+          message = questions[3];
           //questionCount should be 2 at this point - ask for preferences
-          //console.log("Everything okay?: 2= " + questionCount)
+          console.log("Everything okay?: 2= " + questionCount);
           demo = false;
           break;
       }
@@ -136,25 +144,21 @@ app.post("/sms", async (req, res) => {
       dict1Count++;
     } else if (dict1Count > 1 && dict2Count == 1) {
       //Move on to next question (3)
-      console.log("---");
-      console.log(phoneNum);
-      console.log(prereq);
       questionCount++;
     }
 
-    if (questionCount == 3 && dict2Count == 1) {
+    if (questionCount == 4 && dict2Count == 1) {
       //Catch response for preferences
       if (response == "Y") {
         pref = true;
         //Go through pref toggle
       } else {
         //Skip to next question (4)
-        if(!skippedPref){
-            message = questions[questionCount];
-            skippedPref = true;
-        }
-        else{
-            questionCount++;
+        if (!skippedPref) {
+          message = questions[questionCount];
+          skippedPref = true;
+        } else {
+          questionCount++;
         }
       }
     }
@@ -184,10 +188,12 @@ app.post("/sms", async (req, res) => {
           break;
         default:
           wake = response;
-          message = questions[questionCount];
-          //const query = backend.userQuery(phoneNum, intersection);
+          backend.setUser(phoneNum, city, meal, wake, quiet, sleep, prereq);
+          const query = await backend.userQuery(phoneNum, location);
+          console.log(query);
+          message = questions[4]; //Returns all the found shelters
           //questionCount should be 3 at this point - choose shelter
-          //console.log("Everything okay?: 3= " + questionCount)
+          //console.log("Everything okay?: 3= " + questionCount);
           pref = false;
           break;
       }
@@ -198,32 +204,37 @@ app.post("/sms", async (req, res) => {
     } else if (dict1Count > 1 && dict2Count > 1) {
       //Move on to next question (4)
       questionCount++;
-      //Check preferences
-      console.log(
-        phoneNum +
-          "," +
-          city +
-          "," +
-          quiet +
-          "," +
-          meal +
-          "," +
-          neighbourhood +
-          "," +
-          sleep +
-          "," +
-          wake +
-          "," +
-          prereq
-      );
     }
 
-    console.log(questionCount);
-    if (questionCount == 4) {
+    //console.log(questionCount);
+    if (questionCount == 5) {
       message = questions[questionCount]; //Do you want directions?
       shelterChoice = response; //Store response
       questionCount++;
+
+      console.log(
+        location +
+        ", " +
+        shelterChoice +
+        ", " +
+        phoneNum +
+        ", " +
+        city +
+        ", " +
+        quiet +
+        ", " +
+        meal +
+        ", " +
+        neighbourhood +
+        ", " +
+        sleep +
+        ", " +
+        wake +
+        ", " +
+        prereq
+    );
     }
+    /*
     if (questionCount == 6) {
       if (response == "Y") {
         message = questions[5]; //Then ask for the location
@@ -232,23 +243,23 @@ app.post("/sms", async (req, res) => {
       }
       questionCount++;
     }
-    if (questionCount == 8) {
-      //if (response == "Y") {
-          console.log("test");
-        message = responses[2] + "\n" + responses[3]; //Then give directions
-      //}
+    */
+    if (questionCount == 7) {
+      if(response == 'Y'){
+        message = responses[2] + "\n\n" + responses[3]; //Then give directions
+      }
+      else{
+        message = responses[3];
+      }
     }
     if (questionCount > 8) {
       message = responses[3];
-      backend.setUser(phoneNum, city, meal, wake, quiet, sleep, prereq);
     }
-
   } else {
     message = "Not in setup!";
   }
-
+  console.log(questionCount + " -- " + message);
   twiml.message(message);
-  console.log(message);
 
   res.writeHead(200, { "Content-Type": "text/xml" });
   res.end(twiml.toString());
