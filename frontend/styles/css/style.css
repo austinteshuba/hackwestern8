@@ -4,7 +4,7 @@ html, body {
   background-image: linear-gradient(#FFD393, #26BC93);
   min-height: 100vh; }
 
-h1, h2, h3, h4, h5 {
+h1, h2, h3, h4, h5, p {
   margin: 0; }
 
 .page-title {
@@ -82,6 +82,61 @@ h1, h2, h3, h4, h5 {
     transform: scale(1.3); }
   .button:active {
     transform: scale(1.1); }
+  .button p {
+    margin: 1em; }
 
 .page-logo {
   display: block; }
+
+.bed-count-form {
+  display: flex;
+  align-items: center;
+  justify-content: center; }
+
+.circle-button {
+  cursor: pointer;
+  background-color: whitesmoke;
+  border-radius: 1000px;
+  font-size: 4rem;
+  line-height: 15px;
+  font-weight: 400;
+  color: #010101;
+  display: inline-flex;
+  height: 5rem;
+  width: 5rem;
+  text-align: center;
+  margin: 1rem 0;
+  transition: all 0.2s;
+  align-items: center;
+  justify-content: center; }
+  .circle-button:hover {
+    transform: scale(1.3); }
+  .circle-button:active {
+    transform: scale(1.1); }
+  .circle-button .bottom-margin-adjust {
+    margin-bottom: 0.5rem; }
+
+.bed-count-text {
+  font-weight: 500;
+  font-size: 25rem;
+  padding: 0 10rem; }
+
+.text {
+  text-align: center;
+  display: block;
+  font-weight: 200;
+  font-size: 2.5rem; }
+
+.bed-count-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row; }
+  .bed-count-buttons .button {
+    width: 18rem;
+    margin-top: 6rem; }
+    .bed-count-buttons .button:not(:first-child) {
+      margin-left: 4rem; }
+
+#homepage-link {
+  cursor: pointer; }

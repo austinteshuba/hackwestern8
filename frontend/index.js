@@ -32,6 +32,7 @@ const passwordInput = document.getElementById('password');
 const toShelterButton = document.getElementById('toShelter');
 toShelterButton.addEventListener('click', () => {
   if (passwords.has(passwordInput.value)) {
+    document.cookie = `shelterName=${shelterDropdown.value}`;
     window.location.href = "updateShelter";
   } else {
     alert('Incorrect password!');
