@@ -37,9 +37,9 @@ const dict1 = {
   // Demographics
   1: "Are you LGBTQ+? \nAnswer [Y] for Yes, [N] for No, and [P] to Pass.",
   2: "Are you a minor below the age of 18? \nAnswer [Y]/[N]/[P].",
-  3: "Are you accompanied by dependends below the age of 18? \nAnswer Y]/[N]/[P].",
-  4: "Do you identify as indigenous? \nAnswer Y]/[N]/[P].",
-  5: "Do you identify as female? \nAnswer Y]/[N]/[P].",
+  3: "Are you accompanied by dependents below the age of 18? \nAnswer [Y]/[N]/[P].",
+  4: "Do you identify as indigenous? \nAnswer [Y]/[N]/[P].",
+  5: "Do you identify as female? \nAnswer [Y]/[N]/[P].",
 };
 
 const dict2 = {
@@ -47,21 +47,21 @@ const dict2 = {
   2: "Do you prefer quiet? [Y/N]",
   3: "Do you need a meal? [Y/N]",
   4: "What neighbourhood do you want to be in?",
-  5: "what time do you sleep?",
+  5: "What time do you sleep?",
   6: "What time do you wake up?",
 };
 
 const questions = {
   1: "Welcome to ShelterFirst! Let's get you set up. \nReply [Y] to continue, and [N] to abandon this session.",
   2: "Now we will ask you some of your preferences, which will match you to a personalized shelter. \nReply [Y] to continue, and [N] to skip this step.",
-  3: "Here is a list of shelters we found! Choose you're preference: ", //TODO: this question needs data from the database after sending in the user profile
+  3: "Here is a list of shelters we found! Relpy with the number of your preferred shelter: ", //TODO: this question needs data from the database after sending in the user profile
   4: "Would you like directions to the shelter? [Y/N]",
   5: "What intersection are you closest to? [ABC Street and XYZ Avenue]",
 };
 
 const responses = {
   1: "You will not be set up with a profile on ShelterFirst!",
-  2: "Here are the directions to [location of shelter]: \n\nGoogle Maps Directions",
+  2: "Here are the directions to [location of shelter]: \n\nGoogle Maps Directions\n\n\n",
   3: "We will keep you updated on the capacity of this shelter. Your spot has been removed from our "
   + "count for the next thirty minutes, so other ShelterFirst users will not be matched to your "
   + "specific spot, but there are no guarantees about availability.",
