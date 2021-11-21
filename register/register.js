@@ -196,6 +196,4 @@ async function userQuery(phone, intersection){
     var user = await getUser(phone);
     if (user) return queryShelters(intersection, user['mealProvided'], user['quietShelter'], user['wakeUpTime'], user['sleepTime'], user['prerequisites'])
 }
-
-
-queryShelters("Oxford and Richmond St", true, true, 8, 23, ['female']);
+module.exports = {userQuery, getUser, setUser};

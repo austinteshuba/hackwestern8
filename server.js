@@ -1,5 +1,6 @@
 const http = require("http");
 const express = require("express");
+const backend = require('./register/register')
 const session = require("express-session");
 const MessagingResponse = require("twilio").twiml.MessagingResponse;
 const bodyParser = require("body-parser");
@@ -69,13 +70,13 @@ const responses = {
 
 var message = "def";
 
-app.post("/sms", (req, res) => {
+app.post("/sms", async (req, res) => {
   phoneNum = req.body.From;
-
+  const user = await backend.getUser(phoneNum);
   //Check if user is new
   //If database contains phoneNum, skip the dictionary parts
   // req.body.Body.toUpperCase()
-
+  inSetup = user == null;
   var smsCount = req.session.counter || 0;
   const twiml = new MessagingResponse();
   var response = req.body.Body.toUpperCase();
@@ -140,7 +141,6 @@ app.post("/sms", (req, res) => {
       console.log(prereq);
       questionCount++;
     }
-<<<<<<< HEAD
 
     if (questionCount == 3 && dict2Count == 1) {
       //Catch response for preferences
@@ -157,10 +157,6 @@ app.post("/sms", (req, res) => {
             questionCount++;
         }
       }
-=======
-    else if(smsCount === 1 && req.body.Body == 'YES' && inSetup){
-        twiml.message("\n\nGreat. Would you like to be matched to the nearest shelter, or the shelter that best fits your needs? Answer NEAREST or BEST");
->>>>>>> main
     }
 
     if (pref) {
@@ -189,6 +185,7 @@ app.post("/sms", (req, res) => {
         default:
           wake = response;
           message = questions[questionCount];
+          //const query = backend.userQuery(phoneNum, intersection);
           //questionCount should be 3 at this point - choose shelter
           //console.log("Everything okay?: 3= " + questionCount)
           pref = false;
@@ -243,7 +240,9 @@ app.post("/sms", (req, res) => {
     }
     if (questionCount > 8) {
       message = responses[3];
+      backend.setUser(phoneNum, city, meal, wake, quiet, sleep, prereq);
     }
+
   } else {
     message = "Not in setup!";
   }
