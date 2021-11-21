@@ -170,7 +170,10 @@ async function queryShelters(intersection, meal, quiet, wake, sleep, prereq){
             //console.log(travelTimes[i]['travelTime'] + " " + travelScore);
             score += travelScore;
             // Add data to JSON
-            shelter['directions'] = travelTimes[i]['directions'];
+            var dirs = travelTimes[i]['directions'];
+            dirs.forEach((d) => d += "\n");
+            shelter['directions']= dirs;
+            console.log(shelter['directions']);
             shelter['shelterLocation'] = travelTimes[i]['directions'];
             shelter['travelTime'] = travelTimes[i]['travelTime'];
             shelter['score'] = score;
@@ -179,7 +182,8 @@ async function queryShelters(intersection, meal, quiet, wake, sleep, prereq){
     }
     // Sort query
     query.sort((a,b) => b.score - a.score);
-    console.log(query);
+    return query;
+    //console.log(query);
 }
 
 // Query firestore for user, takes phone number string as input
@@ -194,6 +198,7 @@ async function getUser(phone){
 async function userQuery(phone, intersection){
     if (!phone) return queryShelters(intersection, false, false, null, null, []);
     var user = await getUser(phone);
-    if (user) return queryShelters(intersection, user['mealProvided'], user['quietShelter'], user['wakeUpTime'], user['sleepTime'], user['prerequisites'])
+    var query = await queryShelters(intersection, user['mealProvided'], user['quietShelter'], user['wakeUpTime'], user['sleepTime'], user['prerequisites']);
+    if (user) return query
 }
 module.exports = {userQuery, getUser, setUser};

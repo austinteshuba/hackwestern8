@@ -34,7 +34,6 @@ module.exports.getDistancesToShelters = function getDistancesToShelters(userLoca
 
 function getDirections(startingAddress, targetAddress) {
 
-  console.log(startingAddress);
   // Construct the path for the request
   //https://maps.googleapis.com/maps/api/directions/json?origin=Disneyland&destination=Universal+Studios+Hollywood&key=YOUR_API_KEY
   const options = {

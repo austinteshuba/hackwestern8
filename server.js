@@ -47,8 +47,8 @@ const dict2 = {
   1: "What city are you in?",
   2: "Do you prefer a quieter shelter? Answer [Y]/[N].",
   3: "Do you need a meal? Answer [Y/N].",
-  4: "What time do you sleep?",
-  5: "What time do you wake up?",
+  4: "What time do you sleep? Answer in 24 hour time.",
+  5: "What time do you wake up? Answer in 24 hour time.",
 };
 
 const questions = {
@@ -61,17 +61,20 @@ const questions = {
 
 const responses = {
   1: "You will not be set up with a profile on ShelterFirst!",
-  2: "Here are the directions to [location of shelter]: \n\nGoogle Maps Directions\n\n\n",
-  3: "We will keep you updated on the capacity of this shelter. Your spot has been removed from our " +
+  2: "Here are the directions to ",
+  3:
+    "We will keep you updated on the capacity of this shelter. Your spot has been removed from our " +
     "count for the next thirty minutes, so other ShelterFirst users will not be matched to your " +
     "specific spot, but there are no guarantees about availability.",
 };
 
 var message = "def";
+var query = "";
 
 app.post("/sms", async (req, res) => {
   phoneNum = req.body.From;
   const user = await backend.getUser(phoneNum);
+
   //Check if user is new
   //If database contains phoneNum, skip the dictionary parts
   // req.body.Body.toUpperCase()
@@ -151,30 +154,43 @@ app.post("/sms", async (req, res) => {
       } else {
         //Skip to next question (4)
         if (!skippedPref) {
-
           console.log(
             location +
-            ", " +
-            phoneNum +
-            ", " +
-            city +
-            ", " +
-            quiet +
-            ", " +
-            meal +
-            ", " +
-            sleep +
-            ", " +
-            wake +
-            ", " +
-            prereq
-        );
+              ", " +
+              phoneNum +
+              ", " +
+              city +
+              ", " +
+              quiet +
+              ", " +
+              meal +
+              ", " +
+              sleep +
+              ", " +
+              wake +
+              ", " +
+              prereq
+          );
 
           backend.setUser(phoneNum, city, meal, wake, quiet, sleep, prereq);
-          const query = backend.userQuery(phoneNum, location);
-          console.log(query);
+          query = await backend.userQuery(phoneNum, location);
 
-          message = questions[questionCount];
+          var endInd = query.length < 3 ? query.length : 3;
+
+          message = questions[4];
+
+          for (var i = 0; i < endInd; i++) {
+            message += "\n\nShelter " + (i + 1) + ": ";
+            message += "\nName: " + query[i]["name"];
+            message +=
+              "\nWalking Time: " +
+              parseFloat(query[i]["travelTime"]).toFixed(0) +
+              " minutes";
+            message += "\nAddress: " + query[i]["address"];
+            message += "\nPhone Number: " + query[i]["phone"];
+            message += "\nOpen Beds: " + query[i]["openBeds"];
+          }
+
           skippedPref = true;
         } else {
           questionCount++;
@@ -205,32 +221,28 @@ app.post("/sms", async (req, res) => {
         default:
           wake = response;
 
-          console.log(
-            location +
-            ", " +
-            phoneNum +
-            ", " +
-            city +
-            ", " +
-            quiet +
-            ", " +
-            meal +
-            ", " +
-            sleep +
-            ", " +
-            wake +
-            ", " +
-            prereq
-        );
-
+          pref = false;
           backend.setUser(phoneNum, city, meal, wake, quiet, sleep, prereq);
-          //const query = await backend.userQuery(phoneNum, location);
-          //console.log(query);
+          query = await backend.userQuery(phoneNum, location);
 
-          message = questions[4]; //Returns all the found shelters
+          var endInd = query.length < 3 ? query.length : 3;
+
+          message = questions[4];
+
+          for (var i = 0; i < endInd; i++) {
+            message += "\n\nShelter " + (i + 1) + ": ";
+            message += "\nName: " + query[i]["name"];
+            message +=
+              "\nWalking Time: " +
+              parseFloat(query[i]["travelTime"]).toFixed(0) +
+              " minutes";
+            message += "\nAddress: " + query[i]["address"];
+            message += "\nPhone Number: " + query[i]["phone"];
+            message += "\nOpen Beds: " + query[i]["openBeds"];
+          }
+          //Returns all the found shelters
           //questionCount should be 3 at this point - choose shelter
           //console.log("Everything okay?: 3= " + questionCount);
-          pref = false;
           break;
       }
       if (pref) {
@@ -242,10 +254,23 @@ app.post("/sms", async (req, res) => {
       questionCount++;
     }
 
+    console.log(pref);
     //console.log(questionCount);
     if (questionCount == 5) {
       message = questions[questionCount]; //Do you want directions?
       shelterChoice = response; //Store response
+
+      var directionArr = query[shelterChoice - 1]['directions'].toString().split(',');
+      responses[2] += query[shelterChoice - 1]['address'] + "\n\n";
+      for(var i = 0; i < directionArr.length; i++){
+        responses[2] += directionArr[i] + "\n";
+      }
+      /*
+      responses[2] +=
+        query[shelterChoice - 1]["address"] +
+        "\n\n" +
+        query[shelterChoice - 1]["directions"];
+        */
       questionCount++;
     }
     /*
@@ -259,17 +284,18 @@ app.post("/sms", async (req, res) => {
     }
     */
     if (questionCount == 7) {
-      if(response == 'Y'){
+      if (response == "Y") {
         message = responses[2] + "\n\n" + responses[3]; //Then give directions
-      }
-      else{
+      } else {
         message = responses[3];
       }
+      questionCount ++;
     }
     if (questionCount > 8) {
       message = responses[3];
     }
   } else {
+    //Add already logged in functionality
     message = "Not in setup!";
   }
   console.log(questionCount + " -- " + message);
