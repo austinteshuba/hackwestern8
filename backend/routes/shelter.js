@@ -46,9 +46,11 @@ router.get('/shelterDetails', async function (req, res) {
 // quietShelter, mealProvided are bools; openBeds and totalBeds are ints; sleepTime and wakeUpTime are doubles
 router.post('/newShelter', async function (req, res) {
     const body = req.body;
-    db.collection('shelters').doc(body.name.trim().replace(" ", "_")).set({
-      name: body.name.trim(),
-      key: body.name.trim().replace(" ", "_"),
+    console.log(body);
+    const key = body.name.split(' ').join('_');
+    db.collection('shelters').doc(key).set({
+      name: body.name,
+      key: key,
       address: body.address,
       city: body.city,
       quietShelter: body.quietShelter,

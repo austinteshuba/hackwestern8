@@ -40,6 +40,14 @@ h1, h2, h3, h4, h5 {
   font-weight: 300;
   display: block; }
 
+  #confirmation-text{
+    margin:auto;
+  }
+
+  .hide{
+    display: none;
+  }
+
 .form-checkbox{
   display: flex;
   justify-content: space-between;
