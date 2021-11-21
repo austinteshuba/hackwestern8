@@ -11,16 +11,15 @@ app.use(session({ secret: "shelter" }));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 //User Profile
-var phoneNum = "";
-var city = "";
+var phoneNum = null;
+var city = null;
 var quiet = false;
 var meal = false;
-var neighbourhood = "";
-var sleep = -1;
-var wake = -1;
+var sleep = null;
+var wake = null;
 var prereq = [];
 var shelterChoice = -1;
-var location = "";
+var location = null;
 
 //Needs logic for first time user or not
 
@@ -31,7 +30,6 @@ var inSetup = true;
 var questionCount = 1; //Was 1
 var dict1Count = 1;
 var dict2Count = 1;
-var responseCount = 1;
 var skippedPref = false;
 var getLocation = false;
 
@@ -47,11 +45,10 @@ const dict1 = {
 
 const dict2 = {
   1: "What city are you in?",
-  2: "Do you prefer quiet? [Y/N]",
-  3: "Do you need a meal? [Y/N]",
-  4: "What neighbourhood do you want to be in?",
-  5: "What time do you sleep?",
-  6: "What time do you wake up?",
+  2: "Do you prefer a quieter shelter? Answer [Y]/[N].",
+  3: "Do you need a meal? Answer [Y/N].",
+  4: "What time do you sleep?",
+  5: "What time do you wake up?",
 };
 
 const questions = {
@@ -65,8 +62,7 @@ const questions = {
 const responses = {
   1: "You will not be set up with a profile on ShelterFirst!",
   2: "Here are the directions to [location of shelter]: \n\nGoogle Maps Directions\n\n\n",
-  3:
-    "We will keep you updated on the capacity of this shelter. Your spot has been removed from our " +
+  3: "We will keep you updated on the capacity of this shelter. Your spot has been removed from our " +
     "count for the next thirty minutes, so other ShelterFirst users will not be matched to your " +
     "specific spot, but there are no guarantees about availability.",
 };
@@ -82,7 +78,7 @@ app.post("/sms", async (req, res) => {
   //inSetup = user == null;
   var smsCount = req.session.counter || 0;
   const twiml = new MessagingResponse();
-  var response = req.body.Body.toUpperCase();
+  var response = req.body.Body.toUpperCase().trim();
 
   if (inSetup) {
     if (questionCount == 1 && !getLocation) {
@@ -134,7 +130,7 @@ app.post("/sms", async (req, res) => {
           }
           message = questions[3];
           //questionCount should be 2 at this point - ask for preferences
-          console.log("Everything okay?: 2= " + questionCount);
+          //console.log("Everything okay?: 2= " + questionCount);
           demo = false;
           break;
       }
@@ -155,6 +151,29 @@ app.post("/sms", async (req, res) => {
       } else {
         //Skip to next question (4)
         if (!skippedPref) {
+
+          console.log(
+            location +
+            ", " +
+            phoneNum +
+            ", " +
+            city +
+            ", " +
+            quiet +
+            ", " +
+            meal +
+            ", " +
+            sleep +
+            ", " +
+            wake +
+            ", " +
+            prereq
+        );
+
+          backend.setUser(phoneNum, city, meal, wake, quiet, sleep, prereq);
+          const query = backend.userQuery(phoneNum, location);
+          console.log(query);
+
           message = questions[questionCount];
           skippedPref = true;
         } else {
@@ -181,16 +200,33 @@ app.post("/sms", async (req, res) => {
           }
           break;
         case 5:
-          neighbourhood = response;
-          break;
-        case 6:
           sleep = response;
           break;
         default:
           wake = response;
+
+          console.log(
+            location +
+            ", " +
+            phoneNum +
+            ", " +
+            city +
+            ", " +
+            quiet +
+            ", " +
+            meal +
+            ", " +
+            sleep +
+            ", " +
+            wake +
+            ", " +
+            prereq
+        );
+
           backend.setUser(phoneNum, city, meal, wake, quiet, sleep, prereq);
-          const query = await backend.userQuery(phoneNum, location);
-          console.log(query);
+          //const query = await backend.userQuery(phoneNum, location);
+          //console.log(query);
+
           message = questions[4]; //Returns all the found shelters
           //questionCount should be 3 at this point - choose shelter
           //console.log("Everything okay?: 3= " + questionCount);
@@ -211,28 +247,6 @@ app.post("/sms", async (req, res) => {
       message = questions[questionCount]; //Do you want directions?
       shelterChoice = response; //Store response
       questionCount++;
-
-      console.log(
-        location +
-        ", " +
-        shelterChoice +
-        ", " +
-        phoneNum +
-        ", " +
-        city +
-        ", " +
-        quiet +
-        ", " +
-        meal +
-        ", " +
-        neighbourhood +
-        ", " +
-        sleep +
-        ", " +
-        wake +
-        ", " +
-        prereq
-    );
     }
     /*
     if (questionCount == 6) {
