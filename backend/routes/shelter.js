@@ -1,6 +1,9 @@
 const fb = require('firebase-admin/app');
 const fs = require('firebase-admin/firestore');
 const sa = require('./../../register/fb-key.json');
+var bodyParser = require('body-parser');
+// create application/json parser
+var jsonParser = bodyParser.json();
 
 const firebaseConfig = {
   apiKey: "AIzaSyADxWWAVBVUvE_4x7VscXRFLrb5vw0NETY",
@@ -19,6 +22,8 @@ const db = fs.getFirestore(app);
 
 let express = require('express');
 let router = express.Router();
+
+router.use(jsonParser);
 
 // All shelters route
 router.get('/shelters', async function (req, res) {
@@ -49,24 +54,26 @@ router.post('/newShelter', async function (req, res) {
       quietShelter: body.quietShelter,
       mealProvided: body.mealProvided == null ? false : body.mealProvided,
       neighbourhood: body.neighbourhood ? body.neighbourhood : null,
-      openBeds: !body.openBeds ? null: openBeds,
-      totalBeds: !body.totalBeds ? null : body.totalBeds,
+      openBeds: body.openBeds,
+      totalBeds: body.totalBeds,
       phone: body.phone,
       postalCode: body.postalCode,
       sleepTime: !body.sleepTime ? null : body.sleepTime,
       wakeUpTime: !body.wakeUpTime ? null : body.wakeUpTime,
       tags: !body.tags ? [] : body.tags,
       prerequisites: !body.prerequisites ? [] : body.prerequisites
-});
+  });
+  res.status(200).end();
 });
 
 
 // Beds update route, takes parameters "name" (primary key; first letters capitalized) and "openBeds" (int0
 router.put('/bedsUpdate', async function (req, res) {
-  const body = req.body;
+  const body = req['body'];
   db.collection('shelters').doc(body.name.trim().replace(" ", "_")).update({
     openBeds: body.openBeds
   });
+  res.status(200).end();
 });
 
 module.exports = router; 
