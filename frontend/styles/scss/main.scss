@@ -1,0 +1,112 @@
+$color-teal: #26BC93;
+$color-orange-dark: #F7A545;
+$color-bright-orange: #FFBB2A;
+$color-peach: #FFD393;
+$color-white: whitesmoke;
+$color-black: #010101;
+
+html, body {
+  font-size: 62.5%;
+  font-family: 'Montserrat', sans-serif;
+  background-image: linear-gradient($color-peach, $color-teal);
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5 {
+  margin: 0;
+}
+
+.page-title {
+  font-size: 4rem;
+  font-weight: 300;
+  display: block;
+  text-align: center;
+  padding-top: 2rem;
+}
+
+.page-subtitle {
+  font-size: 2.5rem;
+  font-weight: 200;
+  display: block;
+  text-align: center;
+  padding: 1rem 2rem;
+}
+
+.page-title {
+  //padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.select-shelter, .add-shelter {
+  box-sizing: border-box;
+  border-top: solid 1px $color-white;
+  margin: 2rem;
+  padding: 2rem 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.section-header {
+  font-size: 2.5rem;
+  font-weight: 300;
+  display: block;
+}
+
+.form-input {
+  padding: 1rem 0;
+
+  select {
+    cursor: pointer;
+  }
+
+  input, select {
+    display: block;
+    margin-top: 1rem;
+    font-size: 2.5rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 100;
+    height: 4.5rem;
+    width: 40rem;
+    padding: 0 10px;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+  }
+}
+
+.form-label {
+  display:block;
+  font-size: 2rem;
+  font-weight: 200;
+}
+
+.button {
+  cursor: pointer;
+  background-color: $color-white;
+  border-radius: 25px;
+  padding: 0 1rem;
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: $color-black;
+  display: inline-block;
+  width: 10rem;
+  text-align: center;
+  margin: 1rem 0;
+  transition: all 0.2s;
+
+  &:hover {
+    transform: scale(1.3);
+  }
+
+  &:active {
+    transform: scale(1.1);
+  }
+}
+
+.page-logo {
+  display: block;
+
+}
