@@ -32,7 +32,7 @@ router.get('/shelters', async function (req, res) {
 router.get('/shelterDetails', async function (req, res) {
   const shelters = await db.collection('shelters').doc(req.query.name).get();
   var response = shelters.exists ? shelters.data() : {}
-  res.send(response);
+  res.send(JSON.stringify(response));
 });
 
 // New shelter route
