@@ -140,6 +140,7 @@ app.post("/sms", (req, res) => {
       console.log(prereq);
       questionCount++;
     }
+<<<<<<< HEAD
 
     if (questionCount == 3 && dict2Count == 1) {
       //Catch response for preferences
@@ -156,6 +157,10 @@ app.post("/sms", (req, res) => {
             questionCount++;
         }
       }
+=======
+    else if(smsCount === 1 && req.body.Body == 'YES' && inSetup){
+        twiml.message("\n\nGreat. Would you like to be matched to the nearest shelter, or the shelter that best fits your needs? Answer NEAREST or BEST");
+>>>>>>> main
     }
 
     if (pref) {
