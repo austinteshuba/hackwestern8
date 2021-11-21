@@ -9,8 +9,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1 class="page-title">Welcome to shelterFirst</h1>
-    <h2>Canada's first real-time emergency shelter management system</h2>
+    <section class="page-title">
+        <img alt="Shelter First Logo" class="page-logo" src="assets/shelterfirst_logo.png">
+        <h1 class="page-title">Welcome to shelterFirst</h1>
+        <h2 class="page-subtitle">Canada's first real-time emergency shelter management system</h2>
+    </section>
     <section class="select-shelter">
         <p class="section-header">Existing Shelter Accounts</p>
         <div class="form-input">
@@ -27,12 +30,18 @@
             <label class="form-label" for="password">Enter your password</label>
             <input name="password" id="password" type="text"/>
         </div>
+        <div class="button">
+            <p class="button__text">Confirm</p>
+        </div>
     </section>
     <section class="add-shelter">
         <p class="section-header">New Shelter Account</p>
         <div class="form-input">
             <label class="form-label" for="invite-code">Enter your invite code</label>
             <input name="invite-code" id="invite-code" type="text" />
+        </div>
+        <div class="button">
+            <p class="button__text">Confirm</p>
         </div>
     </section>
 </body>
